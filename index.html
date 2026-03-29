@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Introduction to AI Agents — Graduate Handout</title>
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a2e;
+    --ink-muted: #4a4a6a;
+    --ink-light: #8888aa;
+    --bg: #fafaf8;
+    --surface: #ffffff;
+    --accent: #1a4a8a;
+    --accent-light: #e8f0fb;
+    --accent-mid: #3b6ec9;
+    --teal: #0f7a6e;
+    --teal-light: #e0f5f2;
+    --amber: #b85c00;
+    --amber-light: #fff3e0;
+    --coral: #c0392b;
+    --coral-light: #fdecea;
+    --purple: #5e35b1;
+    --purple-light: #ede7f6;
+    --green: #2e7d32;
+    --green-light: #e8f5e9;
+    --border: #e0e0ec;
+    --code-bg: #1e1e3a;
+    --code-text: #c8d0f0;
+    --tab-active: #1a4a8a;
+    --shadow: 0 2px 12px rgba(26,26,46,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--ink);
+    color: #fff;
+    padding: 3rem 2.5rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59,110,201,0.25) 0%, transparent 70%);
+  }
+  .header-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #b8c8f0;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 1.2rem;
+  }
+  .header h1 {
+    font-family: 'Lora', serif;
+    font-size: 2.4rem;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 0.7rem;
+  }
+  .header p {
+    color: #9aadcc;
+    font-size: 1rem;
+    max-width: 560px;
+    line-height: 1.6;
+  }
+  .header-meta {
+    display: flex;
+    gap: 2rem;
+    margin-top: 1.8rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.1);
+  }
+  .header-meta-item { font-size: 13px; color: #7a8faa; }
+  .header-meta-item span { display: block; color: #d0dff0; font-weight: 500; margin-top: 2px; }
+
+  /* NAV TABS */
+  .nav-wrapper {
+    background: var(--surface);
+    border-bottom: 1.5px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .nav-tabs {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  .nav-tabs::-webkit-scrollbar { display: none; }
+  .tab-btn {
+    flex-shrink: 0;
+    padding: 0.85rem 1.3rem;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--ink-muted);
+    background: none;
+    border: none;
+    border-bottom: 2.5px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .tab-btn:hover { color: var(--accent); }
+  .tab-btn.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .tab-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 600;
+    margin-right: 6px;
+  }
+  .tab-btn.active .tab-num { background: var(--accent); color: #fff; }
+
+  /* MAIN CONTENT */
+  .main { max-width: 1000px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+  .section { display: none; }
+  .section.active { display: block; }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-family: 'Lora', serif;
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 0.4rem;
+  }
+  .section-lead {
+    color: var(--ink-muted);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  /* CARDS */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+  }
+  .card-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-icon {
+    width: 28px; height: 28px;
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+
+  /* COMPARISON TABLE */
+  .compare-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  .compare-table th {
+    background: var(--ink);
+    color: #fff;
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 500;
+    font-size: 13px;
+  }
+  .compare-table th:first-child { border-radius: 8px 0 0 0; }
+  .compare-table th:last-child { border-radius: 0 8px 0 0; }
+  .compare-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  .compare-table tr:last-child td { border-bottom: none; }
+  .compare-table tr:nth-child(even) td { background: #f8f8fc; }
+  .check { color: var(--green); font-weight: 600; }
+  .cross { color: var(--coral); font-weight: 600; }
+  .partial { color: var(--amber); font-weight: 600; }
+
+  /* COMPONENT GRID */
+  .component-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .component-card {
+    border-radius: 12px;
+    padding: 1.2rem;
+    border: 1px solid transparent;
+  }
+  .component-card h4 { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.35rem; }
+  .component-card p { font-size: 13px; line-height: 1.5; }
+
+  /* ARCHITECTURE DIAGRAM */
+  .arch-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1.5rem 0;
+  }
+
+  /* TOOL GRID */
+  .tool-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.8rem;
+    margin: 1rem 0;
+  }
+  .tool-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .tool-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* SCENARIO CARDS */
+  .scenario-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+  .scenario-card {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .scenario-card:hover { box-shadow: var(--shadow); }
+  .scenario-header {
+    padding: 1rem 1.2rem 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .scenario-icon {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+  }
+  .scenario-body { padding: 0.6rem 1.2rem 1.2rem; font-size: 13px; line-height: 1.6; }
+  .scenario-steps {
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+  }
+  .step-item {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+    font-size: 12px;
+    color: var(--ink-muted);
+  }
+  .step-num {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 10px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* CODE BLOCKS */
+  .code-block {
+    background: var(--code-bg);
+    border-radius: 10px;
+    padding: 1.2rem 1.4rem;
+    margin: 1rem 0;
+    overflow-x: auto;
+    position: relative;
+  }
+  .code-block pre {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--code-text);
+  }
+  .code-label {
+    position: absolute;
+    top: 8px; right: 12px;
+    font-size: 10px;
+    color: #6080b0;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.06em;
+  }
+  .kw { color: #c792ea; }
+  .fn { color: #82aaff; }
+  .str { color: #c3e88d; }
+  .cm { color: #546e7a; font-style: italic; }
+  .num { color: #f78c6c; }
+  .cls { color: #ffcb6b; }
+
+  /* AGENT DEMO */
+  .demo-container {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-top: 1.5rem;
+  }
+  .demo-header {
+    background: var(--ink);
+    padding: 0.9rem 1.3rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .demo-dots { display: flex; gap: 5px; }
+  .demo-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .demo-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #9ab0d0;
+    font-family: 'DM Mono', monospace;
+    flex: 1;
+    text-align: center;
+  }
+  .demo-badge {
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    background: rgba(59,110,201,0.3);
+    color: #82aaff;
+    font-family: 'DM Mono', monospace;
+  }
+  .chat-area {
+    height: 420px;
+    overflow-y: auto;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+    background: #f9f9fc;
+  }
+  .chat-area::-webkit-scrollbar { width: 4px; }
+  .chat-area::-webkit-scrollbar-track { background: transparent; }
+  .chat-area::-webkit-scrollbar-thumb { background: #d0d0e0; border-radius: 2px; }
+
+  .msg { display: flex; gap: 10px; max-width: 92%; }
+  .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+  .msg-avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .msg-bubble {
+    padding: 0.65rem 0.9rem;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+  .msg.user .msg-bubble {
+    background: var(--accent);
+    color: #fff;
+    border-radius: 12px 12px 3px 12px;
+  }
+  .msg.agent .msg-bubble {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px 12px 12px 3px;
+    color: var(--ink);
+  }
+  .msg.agent .msg-avatar { background: var(--accent-light); color: var(--accent); }
+  .msg.user .msg-avatar { background: var(--accent); color: #fff; }
+
+  /* Tool call display */
+  .tool-call {
+    background: #f0f4ff;
+    border: 1px solid #c5d5f5;
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    margin: 0.4rem 0;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: #3050a0;
+  }
+  .tool-result {
+    background: #f0faf4;
+    border: 1px solid #b5e0c5;
+    border-left: 3px solid var(--teal);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    margin: 0.4rem 0;
+    font-size: 12px;
+    font-family: 'DM Mono', monospace;
+    color: #1a5a3a;
+    white-space: pre-wrap;
+  }
+  .tool-label {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+    opacity: 0.7;
+  }
+
+  .thinking-indicator {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 13px; color: var(--ink-light);
+    font-style: italic;
+    padding: 0.4rem 0;
+  }
+  .dots-anim span {
+    display: inline-block;
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--ink-light);
+    animation: bounce 1.4s infinite;
+  }
+  .dots-anim span:nth-child(2) { animation-delay: 0.2s; }
+  .dots-anim span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%,80%,100% { transform: translateY(0); }
+    40% { transform: translateY(-5px); }
+  }
+
+  /* DEMO INPUT */
+  .demo-input-area {
+    padding: 0.9rem;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+  }
+  .demo-input {
+    flex: 1;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.6rem 0.9rem;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    resize: none;
+    outline: none;
+    color: var(--ink);
+    background: var(--bg);
+    transition: border-color 0.2s;
+    min-height: 40px;
+    max-height: 100px;
+  }
+  .demo-input:focus { border-color: var(--accent-mid); }
+  .send-btn {
+    width: 38px; height: 38px;
+    background: var(--accent);
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s, transform 0.1s;
+    flex-shrink: 0;
+  }
+  .send-btn:hover { background: var(--accent-mid); }
+  .send-btn:active { transform: scale(0.95); }
+  .send-btn:disabled { background: var(--ink-light); cursor: not-allowed; }
+  .send-btn svg { width: 16px; height: 16px; fill: #fff; }
+
+  /* DEMO PRESETS */
+  .preset-chips {
+    padding: 0.6rem 0.9rem 0;
+    display: flex; flex-wrap: wrap; gap: 6px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+  }
+  .preset-chip {
+    font-size: 11.5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--ink-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .preset-chip:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+
+  /* CALLOUT BOX */
+  .callout {
+    display: flex;
+    gap: 12px;
+    padding: 1rem 1.2rem;
+    border-radius: 10px;
+    margin: 1.2rem 0;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .callout.info { background: var(--accent-light); border-left: 3px solid var(--accent-mid); }
+  .callout.tip { background: var(--teal-light); border-left: 3px solid var(--teal); }
+  .callout.warn { background: var(--amber-light); border-left: 3px solid var(--amber); }
+
+  /* SECTION 5: PYTHON CODE */
+  .code-tabs { display: flex; gap: 0; margin-bottom: 0; }
+  .code-tab {
+    padding: 6px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 6px 6px 0 0;
+    font-family: 'DM Mono', monospace;
+    border: 1px solid #2a2a4a;
+    border-bottom: none;
+    background: #13132a;
+    color: #6080b0;
+    margin-right: 3px;
+  }
+  .code-tab.active { background: var(--code-bg); color: #c8d0f0; }
+
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2rem 0;
+  }
+
+  /* TAG */
+  .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-left: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .header h1 { font-size: 1.7rem; }
+    .component-grid { grid-template-columns: 1fr 1fr; }
+    .scenario-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <h1>Introduction to AI Agents</h1>
+  <p>A hands-on introduction to autonomous AI systems — concepts, architecture, tools, and real-world applications for business analytics.</p>
+</div>
+
+<!-- NAVIGATION -->
+<div class="nav-wrapper">
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="showTab(0)"><span class="tab-num">1</span>What Are AI Agents?</button>
+    <button class="tab-btn" onclick="showTab(1)"><span class="tab-num">2</span>Architecture</button>
+    <button class="tab-btn" onclick="showTab(2)"><span class="tab-num">3</span>Tools & Tech</button>
+    <button class="tab-btn" onclick="showTab(3)"><span class="tab-num">4</span>Use Cases</button>
+    <button class="tab-btn" onclick="showTab(4)"><span class="tab-num">5</span>Live Demo</button>
+    <button class="tab-btn" onclick="showTab(5)"><span class="tab-num">6</span>Python Code</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ======================== SECTION 1: WHAT ARE AI AGENTS ======================== -->
+<div class="section active" id="tab-0">
+  <p class="section-title">What Are AI Agents?</p>
+  <p class="section-lead">An AI agent is a software system that <strong>perceives its environment, plans actions, uses tools, and autonomously works toward a goal</strong> — often completing multi-step tasks without constant human input.</p>
+
+  <div class="callout info">
+    <div class="callout-icon">💡</div>
+    <div><strong>One-line definition:</strong> An AI agent = a Large Language Model (LLM) + memory + tools + the ability to plan and act on its own, step by step.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">The evolution: from chatbots to agents</div>
+    <table class="compare-table" style="margin-top:0.8rem">
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Simple Chatbot</th>
+          <th>LLM (e.g., ChatGPT)</th>
+          <th>AI Agent</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Remembers conversation history</td>
+          <td><span class="cross">✗ No</span></td>
+          <td><span class="check">✓ Yes</span></td>
+          <td><span class="check">✓ Yes + long-term</span></td>
+        </tr>
+        <tr>
+          <td>Can use external tools (search, code, APIs)</td>
+          <td><span class="cross">✗ No</span></td>
+          <td><span class="partial">~ Rarely</span></td>
+          <td><span class="check">✓ Core feature</span></td>
+        </tr>
+        <tr>
+          <td>Plans multi-step actions autonomously</td>
+          <td><span class="cross">✗ No</span></td>
+          <td><span class="cross">✗ No</span></td>
+          <td><span class="check">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td>Can correct itself when something fails</td>
+          <td><span class="cross">✗ No</span></td>
+          <td><span class="cross">✗ No</span></td>
+          <td><span class="check">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td>Works without step-by-step human prompting</td>
+          <td><span class="cross">✗ No</span></td>
+          <td><span class="cross">✗ No</span></td>
+          <td><span class="check">✓ Yes</span></td>
+        </tr>
+        <tr>
+          <td>Can coordinate with other AI agents</td>
+          <td><span class="cross">✗ No</span></td>
+          <td><span class="cross">✗ No</span></td>
+          <td><span class="check">✓ Multi-agent possible</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card" style="margin-top:1.2rem">
+    <div class="card-title">A concrete analogy</div>
+    <p style="font-size:14px;line-height:1.6;margin-top:0.5rem">Think of the <strong>LLM as a brilliant but forgetful consultant</strong> who can answer any question. An AI <strong>agent</strong> gives that consultant a desk, a computer, sticky notes, access to databases, a phone, and an assignment — and says: <em>"Go solve this problem. Come back when you're done."</em></p>
+    <div style="margin-top:1rem;display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:13px">
+      <div style="background:#f5f5ff;border-radius:8px;padding:0.8rem">
+        <div style="font-weight:600;margin-bottom:0.4rem;color:#333">Without an agent (LLM only)</div>
+        <div style="color:#555">You: "Analyze our Q3 sales drop."<br>LLM: Here's some general advice about sales... ✗<br><em style="color:#999">Can't access your data, can't run numbers</em></div>
+      </div>
+      <div style="background:#f0faf4;border-radius:8px;padding:0.8rem">
+        <div style="font-weight:600;margin-bottom:0.4rem;color:#1a5a3a">With an agent</div>
+        <div style="color:#2d5a40">You: "Analyze our Q3 sales drop."<br>Agent: ① Fetches your CRM data → ② Runs analysis → ③ Compares to Q2 → ④ Returns insight ✓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Key characteristics of AI agents</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:0.8rem;margin-top:0.8rem">
+      <div style="padding:0.8rem;background:var(--accent-light);border-radius:8px">
+        <div style="font-weight:600;font-size:13px;color:var(--accent);margin-bottom:0.3rem">🎯 Goal-directed</div>
+        <div style="font-size:12px;color:var(--ink-muted)">Works toward a high-level objective, not just one response at a time</div>
+      </div>
+      <div style="padding:0.8rem;background:var(--teal-light);border-radius:8px">
+        <div style="font-weight:600;font-size:13px;color:var(--teal);margin-bottom:0.3rem">🔧 Tool-using</div>
+        <div style="font-size:12px;color:var(--ink-muted)">Can call APIs, run code, search the web, read files</div>
+      </div>
+      <div style="padding:0.8rem;background:var(--purple-light);border-radius:8px">
+        <div style="font-weight:600;font-size:13px;color:var(--purple);margin-bottom:0.3rem">🗂️ Memory</div>
+        <div style="font-size:12px;color:var(--ink-muted)">Remembers context, past actions, and accumulated knowledge</div>
+      </div>
+      <div style="padding:0.8rem;background:var(--amber-light);border-radius:8px">
+        <div style="font-weight:600;font-size:13px;color:var(--amber);margin-bottom:0.3rem">🔄 Iterative</div>
+        <div style="font-size:12px;color:var(--ink-muted)">Perceives results, reflects, and adjusts its next action</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 2: ARCHITECTURE ======================== -->
+<div class="section" id="tab-1">
+  <p class="section-title">Agent Architecture</p>
+  <p class="section-lead">Every AI agent — no matter the framework — is built from the same five core components. Understanding these is the foundation for designing your own agent.</p>
+
+  <div class="arch-diagram">
+    <svg width="100%" viewBox="0 0 860 340" style="display:block">
+      <defs>
+        <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- Environment box (outer dashed) -->
+      <rect x="12" y="12" width="836" height="316" rx="14" fill="#f8f8ff" stroke="#c8c8e0" stroke-width="1" stroke-dasharray="6 4"/>
+      <text x="28" y="32" font-family="DM Sans,sans-serif" font-size="11" fill="#9090b8" font-weight="500">ENVIRONMENT</text>
+
+      <!-- LLM Brain (center) -->
+      <rect x="330" y="110" width="200" height="120" rx="12" fill="#1a4a8a" stroke="#1a4a8a" stroke-width="0"/>
+      <text x="430" y="162" font-family="Lora,serif" font-size="15" fill="#ffffff" text-anchor="middle" font-weight="600">LLM Brain</text>
+      <text x="430" y="181" font-family="DM Sans,sans-serif" font-size="11" fill="#a8c8f8" text-anchor="middle">Reasoning + Planning</text>
+      <text x="430" y="197" font-family="DM Sans,sans-serif" font-size="10" fill="#8aabdd" text-anchor="middle">Claude / GPT-4 / Gemini</text>
+
+      <!-- Perception (left top) -->
+      <rect x="40" y="50" width="180" height="80" rx="10" fill="#e8f0fb" stroke="#b0c8f0" stroke-width="1"/>
+      <text x="130" y="85" font-family="DM Sans,sans-serif" font-size="13" fill="#1a4a8a" text-anchor="middle" font-weight="600">Perception</text>
+      <text x="130" y="103" font-family="DM Sans,sans-serif" font-size="11" fill="#5070a0" text-anchor="middle">Receives user input,</text>
+      <text x="130" y="118" font-family="DM Sans,sans-serif" font-size="11" fill="#5070a0" text-anchor="middle">data &amp; tool results</text>
+
+      <!-- Memory (left bottom) -->
+      <rect x="40" y="200" width="180" height="100" rx="10" fill="#ede7f6" stroke="#c5aff0" stroke-width="1"/>
+      <text x="130" y="240" font-family="DM Sans,sans-serif" font-size="13" fill="#5e35b1" text-anchor="middle" font-weight="600">Memory</text>
+      <text x="130" y="258" font-family="DM Sans,sans-serif" font-size="11" fill="#7050a0" text-anchor="middle">Short-term: conversation</text>
+      <text x="130" y="274" font-family="DM Sans,sans-serif" font-size="11" fill="#7050a0" text-anchor="middle">Long-term: vector DB</text>
+      <text x="130" y="290" font-family="DM Sans,sans-serif" font-size="11" fill="#7050a0" text-anchor="middle">Episodic memory</text>
+
+      <!-- Tools (right top) -->
+      <rect x="640" y="50" width="200" height="100" rx="10" fill="#e0f5f2" stroke="#90d0c8" stroke-width="1"/>
+      <text x="740" y="88" font-family="DM Sans,sans-serif" font-size="13" fill="#0f7a6e" text-anchor="middle" font-weight="600">Tool Use</text>
+      <text x="740" y="106" font-family="DM Sans,sans-serif" font-size="11" fill="#307060" text-anchor="middle">Web search · Code runner</text>
+      <text x="740" y="121" font-family="DM Sans,sans-serif" font-size="11" fill="#307060" text-anchor="middle">APIs · Databases · Files</text>
+      <text x="740" y="136" font-family="DM Sans,sans-serif" font-size="11" fill="#307060" text-anchor="middle">Email · Calendar · CRM</text>
+
+      <!-- Action / Output (right bottom) -->
+      <rect x="640" y="215" width="200" height="85" rx="10" fill="#fff3e0" stroke="#f0c060" stroke-width="1"/>
+      <text x="740" y="250" font-family="DM Sans,sans-serif" font-size="13" fill="#b85c00" text-anchor="middle" font-weight="600">Action / Output</text>
+      <text x="740" y="268" font-family="DM Sans,sans-serif" font-size="11" fill="#7a4010" text-anchor="middle">Final answer · Report</text>
+      <text x="740" y="284" font-family="DM Sans,sans-serif" font-size="11" fill="#7a4010" text-anchor="middle">API call · Decision made</text>
+
+      <!-- Arrows -->
+      <!-- Perception → LLM -->
+      <line x1="222" y1="90" x2="328" y2="150" stroke="#8090c0" stroke-width="1.2" marker-end="url(#arr2)" fill="none"/>
+      <text x="250" y="106" font-family="DM Sans,sans-serif" font-size="10" fill="#8090c0" text-anchor="middle">input</text>
+
+      <!-- Memory ↔ LLM -->
+      <line x1="222" y1="245" x2="328" y2="200" stroke="#9070c0" stroke-width="1.2" marker-end="url(#arr2)" fill="none"/>
+      <line x1="328" y1="210" x2="222" y2="255" stroke="#9070c0" stroke-width="1.2" marker-end="url(#arr2)" fill="none"/>
+
+      <!-- LLM → Tools -->
+      <line x1="532" y1="155" x2="638" y2="115" stroke="#2090a0" stroke-width="1.2" marker-end="url(#arr2)" fill="none"/>
+      <text x="588" y="122" font-family="DM Sans,sans-serif" font-size="10" fill="#2090a0" text-anchor="middle">tool call</text>
+      <!-- Tools → LLM (result back) -->
+      <line x1="638" y1="130" x2="532" y2="165" stroke="#2090a0" stroke-width="1.2" marker-end="url(#arr2)" fill="none"/>
+      <text x="588" y="162" font-family="DM Sans,sans-serif" font-size="10" fill="#2090a0" text-anchor="middle">result</text>
+
+      <!-- LLM → Output -->
+      <line x1="532" y1="185" x2="638" y2="235" stroke="#c07020" stroke-width="1.2" marker-end="url(#arr2)" fill="none"/>
+      <text x="595" y="225" font-family="DM Sans,sans-serif" font-size="10" fill="#c07020" text-anchor="middle">final output</text>
+
+      <!-- Loop arrow at bottom -->
+      <path d="M 740 302 Q 430 340 130 302" stroke="#b0b8d0" stroke-width="1" fill="none" stroke-dasharray="5 4" marker-end="url(#arr2)"/>
+      <text x="430" y="335" font-family="DM Sans,sans-serif" font-size="10" fill="#8088b0" text-anchor="middle">feedback loop / next iteration</text>
+    </svg>
+  </div>
+
+  <div class="component-grid">
+    <div class="component-card" style="background:var(--accent-light);border-color:#b0c8f0">
+      <h4 style="color:var(--accent)">🧠 LLM Brain</h4>
+      <p style="color:#3050a0">The reasoning engine. It reads instructions, decides what to do next, and generates language. This is Claude, GPT-4, Gemini, etc.</p>
+    </div>
+    <div class="component-card" style="background:var(--purple-light);border-color:#c5aff0">
+      <h4 style="color:var(--purple)">🗂️ Memory</h4>
+      <p style="color:#5040a0">Short-term (current conversation) + long-term (vector databases that store facts, past interactions, and domain knowledge).</p>
+    </div>
+    <div class="component-card" style="background:var(--teal-light);border-color:#90d0c8">
+      <h4 style="color:var(--teal)">🔧 Tools</h4>
+      <p style="color:#1a5a50">Functions the agent can call: web search, code execution, database queries, email sending, API calls. This is what gives agents real-world power.</p>
+    </div>
+    <div class="component-card" style="background:var(--amber-light);border-color:#f0c060">
+      <h4 style="color:var(--amber)">🎯 Planning</h4>
+      <p style="color:#7a4010">Breaking a big goal into steps. Techniques: ReAct (Reason + Act), Chain-of-Thought, Tree-of-Thought. The agent decides <em>what to do next</em>.</p>
+    </div>
+    <div class="component-card" style="background:var(--green-light);border-color:#90c890">
+      <h4 style="color:var(--green)">📥 Perception / Input</h4>
+      <p style="color:#1a5a1a">Text, images, file contents, database records, tool results — anything the agent can read and process as context.</p>
+    </div>
+    <div class="component-card" style="background:#fdecea;border-color:#f0a090">
+      <h4 style="color:var(--coral)">📤 Action / Output</h4>
+      <p style="color:#801010">What the agent produces: a report, a decision, an API call, code to run, or a message sent — the agent's effect on the world.</p>
+    </div>
+  </div>
+
+  <div class="callout tip">
+    <div class="callout-icon">🔄</div>
+    <div><strong>The Agent Loop:</strong> At its core, an agent runs a simple cycle — <strong>Observe → Think → Act → Observe → ...</strong> — until the task is complete or the agent decides it needs more information from you.</div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 3: TOOLS & TECH ======================== -->
+<div class="section" id="tab-2">
+  <p class="section-title">Tools & Technologies</p>
+  <p class="section-lead">The AI agent ecosystem is evolving rapidly. Here is the landscape you need to know — organized by layer.</p>
+
+  <div class="card">
+    <div class="card-title"><span class="card-icon" style="background:#e8f0fb">🧠</span>Layer 1: Foundation Models (The Brain)</div>
+    <p style="font-size:13px;color:var(--ink-muted);margin:0.5rem 0 0.8rem">The LLM that powers the reasoning. You call these via API.</p>
+    <div class="tool-grid">
+      <div class="tool-pill"><div class="tool-dot" style="background:#1a4a8a"></div>Claude (Anthropic)</div>
+      <div class="tool-pill"><div class="tool-dot" style="background:#10a37f"></div>GPT-4o (OpenAI)</div>
+      <div class="tool-pill"><div class="tool-dot" style="background:#1a73e8"></div>Gemini (Google)</div>
+      <div class="tool-pill"><div class="tool-dot" style="background:#ff4f00"></div>Llama 3 (Meta)</div>
+      <div class="tool-pill"><div class="tool-dot" style="background:#333"></div>Mistral</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-icon" style="background:#e0f5f2">🔗</span>Layer 2: Orchestration Frameworks</div>
+    <p style="font-size:13px;color:var(--ink-muted);margin:0.5rem 0 0.8rem">Libraries that wire together the LLM, tools, memory, and the agent loop. Start here for your project.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem">
+      <div style="border:1px solid #90d0c8;border-radius:10px;padding:0.9rem;background:#f5fcfa">
+        <div style="font-weight:600;font-size:13px;color:#0f7a6e">🦜 LangChain</div>
+        <div style="font-size:12px;color:#1a5a50;margin-top:0.3rem">Most popular. Chains, agents, memory, tool calling. Python + JS. Best for learning — huge community.</div>
+        <div style="font-size:11px;color:#90b0a8;margin-top:0.4rem">pip install langchain</div>
+      </div>
+      <div style="border:1px solid #c5aff0;border-radius:10px;padding:0.9rem;background:#f8f4ff">
+        <div style="font-weight:600;font-size:13px;color:#5e35b1">🦙 LlamaIndex</div>
+        <div style="font-size:12px;color:#5040a0;margin-top:0.3rem">Best for retrieval-augmented generation (RAG) — connecting agents to your own documents and databases.</div>
+        <div style="font-size:11px;color:#9080c0;margin-top:0.4rem">pip install llama-index</div>
+      </div>
+      <div style="border:1px solid #f0a090;border-radius:10px;padding:0.9rem;background:#fff6f4">
+        <div style="font-weight:600;font-size:13px;color:#c0392b">👥 CrewAI</div>
+        <div style="font-size:12px;color:#801010;margin-top:0.3rem">Multi-agent framework. Define roles (Researcher, Analyst, Writer) and let agents collaborate on tasks.</div>
+        <div style="font-size:11px;color:#c09090;margin-top:0.4rem">pip install crewai</div>
+      </div>
+      <div style="border:1px solid #f0c060;border-radius:10px;padding:0.9rem;background:#fffbf0">
+        <div style="font-weight:600;font-size:13px;color:#b85c00">🤖 AutoGen (Microsoft)</div>
+        <div style="font-size:12px;color:#7a4010;margin-top:0.3rem">Conversational agents that talk to each other. Human-in-the-loop workflows with multiple specialized agents.</div>
+        <div style="font-size:11px;color:#c09050;margin-top:0.4rem">pip install pyautogen</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-icon" style="background:#ede7f6">🗄️</span>Layer 3: Memory & Storage</div>
+    <div class="tool-grid" style="margin-top:0.8rem">
+      <div class="tool-pill"><div class="tool-dot" style="background:#5e35b1"></div>Chroma (local, free)</div>
+      <div class="tool-pill"><div class="tool-dot" style="background:#1a73e8"></div>Pinecone (cloud)</div>
+      <div class="tool-pill"><div class="tool-dot" style="background:#10a37f"></div>Weaviate</div>
+      <div class="tool-pill"><div class="tool-dot" style="background:#333"></div>FAISS (Meta, local)</div>
+      <div class="tool-pill"><div class="tool-dot" style="background:#c0392b"></div>Redis Vector</div>
+    </div>
+    <p style="font-size:12px;color:var(--ink-muted);margin-top:0.7rem">These store text as <em>embeddings</em> (number vectors) so the agent can semantically search your documents — like a smart document brain.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="card-icon" style="background:#e8f0fb">🔧</span>Layer 4: Common Agent Tools</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:0.6rem;margin-top:0.8rem;font-size:12px">
+      <div style="padding:0.6rem;background:#f8f8ff;border-radius:8px;border:1px solid #e0e0f0"><strong>🔍 Search</strong><br>Tavily, Brave, SerpAPI</div>
+      <div style="padding:0.6rem;background:#f8f8ff;border-radius:8px;border:1px solid #e0e0f0"><strong>💻 Code</strong><br>Python REPL, E2B sandbox</div>
+      <div style="padding:0.6rem;background:#f8f8ff;border-radius:8px;border:1px solid #e0e0f0"><strong>📊 Data</strong><br>SQL, Pandas, Excel via code</div>
+      <div style="padding:0.6rem;background:#f8f8ff;border-radius:8px;border:1px solid #e0e0f0"><strong>📁 Files</strong><br>PDF reader, CSV parser</div>
+      <div style="padding:0.6rem;background:#f8f8ff;border-radius:8px;border:1px solid #e0e0f0"><strong>📧 Comms</strong><br>Gmail, Slack, Calendar</div>
+      <div style="padding:0.6rem;background:#f8f8ff;border-radius:8px;border:1px solid #e0e0f0"><strong>🌐 Web</strong><br>Browser, scraper, APIs</div>
+    </div>
+  </div>
+
+  <div class="callout warn">
+    <div class="callout-icon">📌</div>
+    <div><strong>For your project:</strong> Start with the <strong>Anthropic Python SDK</strong> + tool use. It is the most readable and beginner-friendly way to build a functional agent. Once you understand the loop, try LangChain.</div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 4: USE CASES ======================== -->
+<div class="section" id="tab-3">
+  <p class="section-title">Business Use Cases</p>
+  <p class="section-lead">AI agents are transforming how companies operate. Here are key scenarios especially relevant to business analytics — each one is a potential project idea.</p>
+
+  <div class="scenario-grid">
+    <div class="scenario-card">
+      <div class="scenario-header">
+        <div class="scenario-icon" style="background:#e8f0fb">📊</div>
+        <div>
+          <div style="font-weight:600;font-size:14px">Market Intelligence Agent</div>
+          <div style="font-size:12px;color:var(--ink-muted)">Competitive analysis, auto-updated</div>
+        </div>
+      </div>
+      <div class="scenario-body">
+        Monitors competitor websites, news sources, and filings. Summarizes weekly changes in pricing, features, and strategy.
+        <div class="scenario-steps">
+          <div class="step-item"><div class="step-num">1</div>Search news for competitor mentions</div>
+          <div class="step-item"><div class="step-num">2</div>Extract pricing and product changes</div>
+          <div class="step-item"><div class="step-num">3</div>Compare to historical data in memory</div>
+          <div class="step-item"><div class="step-num">4</div>Email summary report to team</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card">
+      <div class="scenario-header">
+        <div class="scenario-icon" style="background:#e0f5f2">💬</div>
+        <div>
+          <div style="font-weight:600;font-size:14px">Customer Support Agent</div>
+          <div style="font-size:12px;color:var(--ink-muted)">24/7 intelligent helpdesk</div>
+        </div>
+      </div>
+      <div class="scenario-body">
+        Handles customer queries by searching the knowledge base, retrieving order data from CRM, and escalating complex issues to humans.
+        <div class="scenario-steps">
+          <div class="step-item"><div class="step-num">1</div>Parse customer issue from message</div>
+          <div class="step-item"><div class="step-num">2</div>Search FAQ / policy documents</div>
+          <div class="step-item"><div class="step-num">3</div>Query CRM for order history</div>
+          <div class="step-item"><div class="step-num">4</div>Respond or escalate with full context</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card">
+      <div class="scenario-header">
+        <div class="scenario-icon" style="background:#ede7f6">📈</div>
+        <div>
+          <div style="font-weight:600;font-size:14px">Financial Analysis Agent</div>
+          <div style="font-size:12px;color:var(--ink-muted)">Automated reporting & insights</div>
+        </div>
+      </div>
+      <div class="scenario-body">
+        Given a question like "Why did our margins drop last quarter?", the agent queries databases, runs calculations, and produces a full memo.
+        <div class="scenario-steps">
+          <div class="step-item"><div class="step-num">1</div>Identify relevant metrics & time range</div>
+          <div class="step-item"><div class="step-num">2</div>Query financial DB with SQL</div>
+          <div class="step-item"><div class="step-num">3</div>Calculate deltas and percentages</div>
+          <div class="step-item"><div class="step-num">4</div>Write executive summary</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card">
+      <div class="scenario-header">
+        <div class="scenario-icon" style="background:#fff3e0">🔗</div>
+        <div>
+          <div style="font-weight:600;font-size:14px">Supply Chain Agent</div>
+          <div style="font-size:12px;color:var(--ink-muted)">Inventory & logistics optimization</div>
+        </div>
+      </div>
+      <div class="scenario-body">
+        Monitors stock levels, forecasts demand, and automatically triggers reorders or alerts when thresholds are breached.
+        <div class="scenario-steps">
+          <div class="step-item"><div class="step-num">1</div>Monitor inventory levels in real-time</div>
+          <div class="step-item"><div class="step-num">2</div>Forecast demand from historical data</div>
+          <div class="step-item"><div class="step-num">3</div>Alert on shortfall risk</div>
+          <div class="step-item"><div class="step-num">4</div>Draft PO or send reorder request</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card">
+      <div class="scenario-header">
+        <div class="scenario-icon" style="background:#e8f5e9">🔍</div>
+        <div>
+          <div style="font-weight:600;font-size:14px">Research Assistant Agent</div>
+          <div style="font-size:12px;color:var(--ink-muted)">Literature & data synthesis</div>
+        </div>
+      </div>
+      <div class="scenario-body">
+        Searches academic databases and web sources, reads papers, extracts key findings, and synthesizes a structured literature review.
+        <div class="scenario-steps">
+          <div class="step-item"><div class="step-num">1</div>Decompose research question into sub-queries</div>
+          <div class="step-item"><div class="step-num">2</div>Search and retrieve relevant papers</div>
+          <div class="step-item"><div class="step-num">3</div>Extract and compare findings</div>
+          <div class="step-item"><div class="step-num">4</div>Produce annotated bibliography</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenario-card">
+      <div class="scenario-header">
+        <div class="scenario-icon" style="background:#fdecea">🤝</div>
+        <div>
+          <div style="font-weight:600;font-size:14px">HR Recruitment Agent</div>
+          <div style="font-size:12px;color:var(--ink-muted)">Screening & interview scheduling</div>
+        </div>
+      </div>
+      <div class="scenario-body">
+        Screens applicant CVs against job descriptions, scores candidates, sends personalized outreach, and schedules interviews via calendar API.
+        <div class="scenario-steps">
+          <div class="step-item"><div class="step-num">1</div>Parse CVs and extract skills/experience</div>
+          <div class="step-item"><div class="step-num">2</div>Score fit against job requirements</div>
+          <div class="step-item"><div class="step-num">3</div>Draft personalized outreach email</div>
+          <div class="step-item"><div class="step-num">4</div>Book interview via Calendar API</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout info" style="margin-top:0.5rem">
+    <div class="callout-icon">🎓</div>
+    <div><strong>Project suggestion:</strong> Pick any scenario above and identify: (1) what tools the agent needs, (2) what data sources it would access, (3) how you'd measure its performance. This is your project scoping exercise.</div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 5: LIVE DEMO ======================== -->
+<div class="section" id="tab-4">
+  <p class="section-title">Live Demo — Business Intelligence Agent</p>
+  <p class="section-lead">This is a real AI agent powered by Claude. It has access to three <strong>tools</strong>: market data lookup, financial calculations, and industry benchmarking. Watch how it decides which tools to use and chains them together.</p>
+
+  <div class="callout info" style="margin-bottom:1rem;align-items:flex-start">
+    <div class="callout-icon">🔑</div>
+    <div style="width:100%">
+      <strong>API Key required</strong> — enter your Anthropic API key to activate the demo. Get one free at <a href="https://console.anthropic.com" style="color:var(--accent)" target="_blank">console.anthropic.com</a>. It is used only locally in your browser.
+      <div style="display:flex;gap:8px;margin-top:0.6rem;align-items:center">
+        <input type="password" id="api-key-input" placeholder="sk-ant-api03-..." style="flex:1;border:1px solid #b0c8f0;border-radius:8px;padding:0.45rem 0.75rem;font-size:13px;font-family:'DM Mono',monospace;outline:none;background:#fff;color:#1a1a2e"/>
+        <button onclick="saveKey()" style="padding:0.45rem 1rem;border-radius:8px;border:none;background:var(--accent);color:#fff;font-size:13px;font-family:'DM Sans',sans-serif;cursor:pointer;white-space:nowrap">Save Key</button>
+      </div>
+      <div id="key-status" style="font-size:12px;margin-top:5px;color:var(--ink-muted)"></div>
+    </div>
+  </div>
+
+  <div class="callout tip" style="margin-bottom:1rem">
+    <div class="callout-icon">👁️</div>
+    <div>Notice the <span style="font-family:DM Mono,monospace;font-size:12px;background:#c8f0e8;padding:1px 5px;border-radius:3px">tool call →</span> and <span style="font-family:DM Mono,monospace;font-size:12px;background:#c8f0e8;padding:1px 5px;border-radius:3px">tool result →</span> boxes — this is the agent's <em>reasoning trace</em>, showing every step it takes before giving you an answer.</div>
+  </div>
+
+  <div class="demo-container">
+    <div class="demo-header">
+      <div class="demo-dots">
+        <div class="demo-dot" style="background:#ff5f57"></div>
+        <div class="demo-dot" style="background:#ffbd2e"></div>
+        <div class="demo-dot" style="background:#27c93f"></div>
+      </div>
+      <div class="demo-title">business-intelligence-agent.py</div>
+      <div class="demo-badge">claude-sonnet-4-20250514</div>
+    </div>
+    <div class="chat-area" id="chat-area">
+      <div class="msg agent">
+        <div class="msg-avatar">AI</div>
+        <div class="msg-bubble">
+          Hello! I'm your Business Intelligence Agent. I have access to market data, financial calculators, and industry benchmarks.<br><br>
+          Try asking me: <em>"What is the profit margin for TechCorp and how does it compare to the industry?"</em> or use the preset questions below.
+        </div>
+      </div>
+    </div>
+    <div class="preset-chips">
+      <button class="preset-chip" onclick="sendPreset('Analyze TechCorp profitability vs industry average')">📊 TechCorp profitability analysis</button>
+      <button class="preset-chip" onclick="sendPreset('Compare revenue growth of RetailCo and HealthPlus over the last year')">📈 Revenue growth comparison</button>
+      <button class="preset-chip" onclick="sendPreset('What is the ROI if I invest $500,000 in a project returning $80,000 per year for 8 years?')">💰 Calculate ROI</button>
+      <button class="preset-chip" onclick="sendPreset('Which company has the best financial health: TechCorp, RetailCo, or HealthPlus?')">🏆 Best financial health</button>
+    </div>
+    <div class="demo-input-area">
+      <textarea class="demo-input" id="user-input" placeholder="Ask the agent anything about business metrics..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMessage()}"
+        oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,100)+'px'"></textarea>
+      <button class="send-btn" id="send-btn" onclick="sendMessage()">
+        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== SECTION 6: PYTHON CODE ======================== -->
+<div class="section" id="tab-5">
+  <p class="section-title">Python Code Walkthrough</p>
+  <p class="section-lead">This is the actual Python code that powers the demo above. Study it to understand how a real agent is built — then adapt it for your project.</p>
+
+  <div class="callout info">
+    <div class="callout-icon">🐍</div>
+    <div><strong>Setup:</strong> <code style="background:#e8f0fb;padding:2px 6px;border-radius:4px;font-size:12px">pip install anthropic</code> — then get a free API key at <a href="https://console.anthropic.com" style="color:var(--accent)">console.anthropic.com</a></div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">PYTHON</div>
+    <pre><span class="cm"># Step 1: Install the SDK and import dependencies</span>
+<span class="kw">import</span> anthropic
+<span class="kw">import</span> json
+
+<span class="cm"># Initialize the client (uses ANTHROPIC_API_KEY env variable)</span>
+client = anthropic.<span class="cls">Anthropic</span>()</pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">PYTHON — DEFINE TOOLS</div>
+    <pre><span class="cm"># Step 2: Define what tools your agent can use
+# These are JSON schemas that tell the LLM what functions exist</span>
+
+tools = [
+    {
+        <span class="str">"name"</span>: <span class="str">"get_company_data"</span>,
+        <span class="str">"description"</span>: <span class="str">"Fetch financial metrics for a company"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"company_name"</span>: {
+                    <span class="str">"type"</span>: <span class="str">"string"</span>,
+                    <span class="str">"description"</span>: <span class="str">"Name of the company to look up"</span>
+                }
+            },
+            <span class="str">"required"</span>: [<span class="str">"company_name"</span>]
+        }
+    },
+    {
+        <span class="str">"name"</span>: <span class="str">"calculate_roi"</span>,
+        <span class="str">"description"</span>: <span class="str">"Calculate Return on Investment"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"investment"</span>: {<span class="str">"type"</span>: <span class="str">"number"</span>},
+                <span class="str">"annual_return"</span>: {<span class="str">"type"</span>: <span class="str">"number"</span>},
+                <span class="str">"years"</span>: {<span class="str">"type"</span>: <span class="str">"number"</span>}
+            },
+            <span class="str">"required"</span>: [<span class="str">"investment"</span>, <span class="str">"annual_return"</span>, <span class="str">"years"</span>]
+        }
+    },
+    {
+        <span class="str">"name"</span>: <span class="str">"get_industry_benchmark"</span>,
+        <span class="str">"description"</span>: <span class="str">"Get industry average benchmarks for a metric"</span>,
+        <span class="str">"input_schema"</span>: {
+            <span class="str">"type"</span>: <span class="str">"object"</span>,
+            <span class="str">"properties"</span>: {
+                <span class="str">"industry"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>},
+                <span class="str">"metric"</span>: {<span class="str">"type"</span>: <span class="str">"string"</span>}
+            },
+            <span class="str">"required"</span>: [<span class="str">"industry"</span>, <span class="str">"metric"</span>]
+        }
+    }
+]</pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">PYTHON — IMPLEMENT TOOLS</div>
+    <pre><span class="cm"># Step 3: Write the actual Python functions that do the real work
+# In a real project, these would call your database or APIs</span>
+
+<span class="kw">def</span> <span class="fn">get_company_data</span>(company_name: str) -> dict:
+    <span class="cm"># In production: query your CRM, ERP, or data warehouse</span>
+    database = {
+        <span class="str">"TechCorp"</span>: {<span class="str">"revenue"</span>: <span class="num">5_200_000</span>, <span class="str">"profit_margin"</span>: <span class="num">0.22</span>, <span class="str">"growth"</span>: <span class="num">0.18</span>},
+        <span class="str">"RetailCo"</span>: {<span class="str">"revenue"</span>: <span class="num">12_000_000</span>, <span class="str">"profit_margin"</span>: <span class="num">0.08</span>, <span class="str">"growth"</span>: <span class="num">0.04</span>},
+        <span class="str">"HealthPlus"</span>: {<span class="str">"revenue"</span>: <span class="num">3_800_000</span>, <span class="str">"profit_margin"</span>: <span class="num">0.31</span>, <span class="str">"growth"</span>: <span class="num">0.25</span>},
+    }
+    <span class="kw">return</span> database.get(company_name, {<span class="str">"error"</span>: <span class="str">"Company not found"</span>})
+
+<span class="kw">def</span> <span class="fn">calculate_roi</span>(investment: float, annual_return: float, years: int) -> dict:
+    total_return = annual_return * years
+    roi_pct = ((total_return - investment) / investment) * <span class="num">100</span>
+    <span class="kw">return</span> {
+        <span class="str">"total_return"</span>: total_return,
+        <span class="str">"net_profit"</span>: total_return - investment,
+        <span class="str">"roi_percent"</span>: <span class="fn">round</span>(roi_pct, <span class="num">2</span>),
+        <span class="str">"payback_years"</span>: <span class="fn">round</span>(investment / annual_return, <span class="num">1</span>)
+    }
+
+<span class="kw">def</span> <span class="fn">get_industry_benchmark</span>(industry: str, metric: str) -> dict:
+    benchmarks = {
+        <span class="str">"tech"</span>: {<span class="str">"profit_margin"</span>: <span class="num">0.18</span>, <span class="str">"revenue_growth"</span>: <span class="num">0.15</span>},
+        <span class="str">"retail"</span>: {<span class="str">"profit_margin"</span>: <span class="num">0.06</span>, <span class="str">"revenue_growth"</span>: <span class="num">0.05</span>},
+        <span class="str">"healthcare"</span>: {<span class="str">"profit_margin"</span>: <span class="num">0.12</span>, <span class="str">"revenue_growth"</span>: <span class="num">0.10</span>},
+    }
+    result = benchmarks.get(industry.lower(), {})
+    <span class="kw">return</span> {<span class="str">"industry"</span>: industry, <span class="str">"metric"</span>: metric, <span class="str">"benchmark"</span>: result.get(metric, <span class="str">"N/A"</span>)}
+
+<span class="cm"># Route tool calls to the right Python function</span>
+<span class="kw">def</span> <span class="fn">execute_tool</span>(tool_name: str, tool_input: dict) -> str:
+    <span class="kw">if</span> tool_name == <span class="str">"get_company_data"</span>:
+        result = <span class="fn">get_company_data</span>(**tool_input)
+    <span class="kw">elif</span> tool_name == <span class="str">"calculate_roi"</span>:
+        result = <span class="fn">calculate_roi</span>(**tool_input)
+    <span class="kw">elif</span> tool_name == <span class="str">"get_industry_benchmark"</span>:
+        result = <span class="fn">get_industry_benchmark</span>(**tool_input)
+    <span class="kw">else</span>:
+        result = {<span class="str">"error"</span>: <span class="str">f"Unknown tool: {tool_name}"</span>}
+    <span class="kw">return</span> json.<span class="fn">dumps</span>(result)</pre>
+  </div>
+
+  <div class="code-block">
+    <div class="code-label">PYTHON — THE AGENT LOOP ⭐</div>
+    <pre><span class="cm"># Step 4: The agent loop — this is the heart of every AI agent
+# The agent keeps going until it has a final answer</span>
+
+<span class="kw">def</span> <span class="fn">run_agent</span>(user_question: str) -> str:
+    messages = [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: user_question}]
+    
+    <span class="kw">while</span> <span class="cls">True</span>:
+        <span class="cm"># Call Claude with the available tools</span>
+        response = client.messages.<span class="fn">create</span>(
+            model=<span class="str">"claude-sonnet-4-20250514"</span>,
+            max_tokens=<span class="num">1024</span>,
+            tools=tools,
+            messages=messages,
+            system=<span class="str">"You are a Business Intelligence Agent. Use tools to gather data, then synthesize a clear insight."</span>
+        )
+        
+        <span class="cm"># If Claude is done reasoning, return the final answer</span>
+        <span class="kw">if</span> response.stop_reason == <span class="str">"end_turn"</span>:
+            <span class="kw">return</span> response.content[<span class="num">0</span>].text
+        
+        <span class="cm"># Otherwise, Claude wants to call a tool — execute it and loop</span>
+        tool_results = []
+        <span class="kw">for</span> block <span class="kw">in</span> response.content:
+            <span class="kw">if</span> block.type == <span class="str">"tool_use"</span>:
+                result = <span class="fn">execute_tool</span>(block.name, block.input)
+                <span class="fn">print</span>(<span class="str">f"Tool called: {block.name} → {result}"</span>)
+                tool_results.<span class="fn">append</span>({
+                    <span class="str">"type"</span>: <span class="str">"tool_result"</span>,
+                    <span class="str">"tool_use_id"</span>: block.id,
+                    <span class="str">"content"</span>: result
+                })
+        
+        <span class="cm"># Add the tool results to the conversation and keep looping</span>
+        messages.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: response.content})
+        messages.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: tool_results})
+
+<span class="cm"># Run it!</span>
+answer = <span class="fn">run_agent</span>(<span class="str">"Analyze TechCorp profitability vs the tech industry average"</span>)
+<span class="fn">print</span>(answer)</pre>
+  </div>
+
+  <div class="callout tip" style="margin-top:1.5rem">
+    <div class="callout-icon">📝</div>
+    <div>
+      <strong>Key insight — the agent loop:</strong> Notice the <code style="font-size:12px;background:#c8f0e8;padding:1px 5px;border-radius:3px">while True</code> loop. The agent keeps running until <code style="font-size:12px;background:#c8f0e8;padding:1px 5px;border-radius:3px">stop_reason == "end_turn"</code>. Every iteration: Claude decides what tool to call → you execute it → you give the result back → Claude decides the next step. This loop <em>is</em> the agent.
+    </div>
+  </div>
+
+  <hr class="section-divider">
+  <div style="font-weight:600;font-size:1rem;margin-bottom:0.8rem">📚 Recommended next steps</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.8rem;font-size:13px">
+    <div style="padding:0.9rem;border-radius:10px;border:1px solid var(--border);background:var(--surface)">
+      <strong>Week 1</strong><br><span style="color:var(--ink-muted)">Run the Python code above. Add a new tool (e.g., currency converter). Observe the loop.</span>
+    </div>
+    <div style="padding:0.9rem;border-radius:10px;border:1px solid var(--border);background:var(--surface)">
+      <strong>Week 2</strong><br><span style="color:var(--ink-muted)">Add memory with ChromaDB. Let the agent remember previous queries across sessions.</span>
+    </div>
+    <div style="padding:0.9rem;border-radius:10px;border:1px solid var(--border);background:var(--surface)">
+      <strong>Week 3–4</strong><br><span style="color:var(--ink-muted)">Define your business scenario. Connect real data sources. Build a multi-step workflow.</span>
+    </div>
+    <div style="padding:0.9rem;border-radius:10px;border:1px solid var(--border);background:var(--surface)">
+      <strong>Final Project</strong><br><span style="color:var(--ink-muted)">A working agent for your chosen domain, with evaluation metrics and a presentation.</span>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .main -->
+
+<script>
+// ======= TAB NAVIGATION =======
+function showTab(idx) {
+  document.querySelectorAll('.section').forEach((s,i) => s.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+
+// ======= API KEY =======
+let userApiKey = "";
+function saveKey() {
+  const val = document.getElementById("api-key-input").value.trim();
+  if (!val.startsWith("sk-")) {
+    document.getElementById("key-status").textContent = "⚠️ Key should start with sk-ant-...";
+    document.getElementById("key-status").style.color = "#c0392b";
+    return;
+  }
+  userApiKey = val;
+  document.getElementById("key-status").textContent = "✓ Key saved — you can now use the demo.";
+  document.getElementById("key-status").style.color = "#0f7a6e";
+}
+
+// ======= AGENT DEMO =======
+const TOOLS_DEF = [
+  {
+    name: "get_company_data",
+    description: "Fetch financial metrics for a named company. Available companies: TechCorp, RetailCo, HealthPlus.",
+    input_schema: {
+      type: "object",
+      properties: { company_name: { type: "string", description: "Name of the company" } },
+      required: ["company_name"]
+    }
+  },
+  {
+    name: "calculate_roi",
+    description: "Calculate Return on Investment given an initial investment, annual return, and number of years.",
+    input_schema: {
+      type: "object",
+      properties: {
+        investment: { type: "number", description: "Initial investment amount in dollars" },
+        annual_return: { type: "number", description: "Annual return amount in dollars" },
+        years: { type: "number", description: "Number of years" }
+      },
+      required: ["investment", "annual_return", "years"]
+    }
+  },
+  {
+    name: "get_industry_benchmark",
+    description: "Get industry average benchmarks for a specific metric. Industries: tech, retail, healthcare. Metrics: profit_margin, revenue_growth.",
+    input_schema: {
+      type: "object",
+      properties: {
+        industry: { type: "string" },
+        metric: { type: "string" }
+      },
+      required: ["industry", "metric"]
+    }
+  }
+];
+
+const DB = {
+  TechCorp: { revenue: 5200000, profit_margin: 0.22, growth: 0.18, industry: "tech" },
+  RetailCo: { revenue: 12000000, profit_margin: 0.08, growth: 0.04, industry: "retail" },
+  HealthPlus: { revenue: 3800000, profit_margin: 0.31, growth: 0.25, industry: "healthcare" }
+};
+const BENCHMARKS = {
+  tech: { profit_margin: 0.18, revenue_growth: 0.15 },
+  retail: { profit_margin: 0.06, revenue_growth: 0.05 },
+  healthcare: { profit_margin: 0.12, revenue_growth: 0.10 }
+};
+
+function executeTool(name, input) {
+  if (name === "get_company_data") {
+    const d = DB[input.company_name];
+    if (!d) return JSON.stringify({ error: "Company not found. Available: TechCorp, RetailCo, HealthPlus" });
+    return JSON.stringify({
+      company: input.company_name,
+      revenue: "$" + d.revenue.toLocaleString(),
+      profit_margin: (d.profit_margin * 100).toFixed(1) + "%",
+      revenue_growth: (d.growth * 100).toFixed(1) + "%",
+      industry: d.industry
+    });
+  }
+  if (name === "calculate_roi") {
+    const total = input.annual_return * input.years;
+    const net = total - input.investment;
+    const roi = ((net / input.investment) * 100).toFixed(2);
+    const payback = (input.investment / input.annual_return).toFixed(1);
+    return JSON.stringify({
+      investment: "$" + input.investment.toLocaleString(),
+      total_return: "$" + total.toLocaleString(),
+      net_profit: "$" + net.toLocaleString(),
+      roi_percent: roi + "%",
+      payback_period: payback + " years"
+    });
+  }
+  if (name === "get_industry_benchmark") {
+    const b = BENCHMARKS[input.industry.toLowerCase()];
+    if (!b) return JSON.stringify({ error: "Industry not found. Try: tech, retail, healthcare" });
+    const val = b[input.metric.toLowerCase().replace(/ /g, "_")];
+    return JSON.stringify({
+      industry: input.industry,
+      metric: input.metric,
+      benchmark: val !== undefined ? (val * 100).toFixed(1) + "%" : "N/A"
+    });
+  }
+  return JSON.stringify({ error: "Unknown tool: " + name });
+}
+
+let conversationHistory = [];
+let isLoading = false;
+
+function addMsg(role, content) {
+  const area = document.getElementById("chat-area");
+  const div = document.createElement("div");
+  div.className = "msg " + role;
+  const label = role === "user" ? "U" : "AI";
+  div.innerHTML = `<div class="msg-avatar">${label}</div><div class="msg-bubble">${content}</div>`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+  return div;
+}
+
+function addToolDisplay(type, label, content) {
+  const area = document.getElementById("chat-area");
+  const div = document.createElement("div");
+  div.className = type === "call" ? "tool-call" : "tool-result";
+  div.innerHTML = `<div class="tool-label">${label}</div>${content}`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function addThinking() {
+  const area = document.getElementById("chat-area");
+  const div = document.createElement("div");
+  div.className = "thinking-indicator";
+  div.id = "thinking";
+  div.innerHTML = `<div class="dots-anim"><span></span><span></span><span></span></div> Agent is thinking...`;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+
+function removeThinking() {
+  const t = document.getElementById("thinking");
+  if (t) t.remove();
+}
+
+async function runAgentLoop(messages) {
+  addThinking();
+  let currentMessages = [...messages];
+
+  while (true) {
+    const body = {
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 1000,
+      system: "You are a Business Intelligence Agent for a graduate business analytics course. Use tools to gather data and provide insightful analysis. Be concise but thorough. Always show your reasoning.",
+      tools: TOOLS_DEF,
+      messages: currentMessages
+    };
+
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-api-key": userApiKey, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
+      body: JSON.stringify(body)
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      removeThinking();
+      addMsg("agent", "⚠️ API error: " + (err.error?.message || "Something went wrong. Please try again."));
+      return;
+    }
+
+    const data = await res.json();
+    const toolUseBlocks = data.content.filter(b => b.type === "tool_use");
+
+    if (data.stop_reason === "end_turn" || toolUseBlocks.length === 0) {
+      removeThinking();
+      const textBlock = data.content.find(b => b.type === "text");
+      if (textBlock) {
+        addMsg("agent", textBlock.text.replace(/\n/g, "<br>"));
+      }
+      return;
+    }
+
+    // Process tool calls
+    const toolResults = [];
+    for (const block of toolUseBlocks) {
+      removeThinking();
+      addToolDisplay("call", "⚙️ Tool call →",
+        `<strong>${block.name}</strong> with: ${JSON.stringify(block.input, null, 1)}`);
+
+      const result = executeTool(block.name, block.input);
+      addToolDisplay("result", "📦 Tool result →", result);
+      addThinking();
+
+      toolResults.push({ type: "tool_result", tool_use_id: block.id, content: result });
+    }
+
+    currentMessages.push({ role: "assistant", content: data.content });
+    currentMessages.push({ role: "user", content: toolResults });
+  }
+}
+
+async function sendMessage() {
+  if (isLoading) return;
+  const input = document.getElementById("user-input");
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = "";
+  input.style.height = "auto";
+  isLoading = true;
+  document.getElementById("send-btn").disabled = true;
+
+  addMsg("user", text);
+  conversationHistory.push({ role: "user", content: text });
+
+  if (!userApiKey) {
+    removeThinking();
+    addMsg("agent", "⚠️ Please enter your Anthropic API key above and click <strong>Save Key</strong> before sending a message.");
+    isLoading = false;
+    document.getElementById("send-btn").disabled = false;
+    return;
+  }
+
+  try {
+    await runAgentLoop(conversationHistory);
+  } catch (e) {
+    removeThinking();
+    addMsg("agent", "Connection error. Make sure you have network access.");
+  }
+
+  isLoading = false;
+  document.getElementById("send-btn").disabled = false;
+}
+
+function sendPreset(text) {
+  document.getElementById("user-input").value = text;
+  sendMessage();
+}
+</script>
+</body>
+</html>
