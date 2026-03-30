@@ -607,6 +607,7 @@
     <button class="tab-btn" onclick="showTab(3)"><span class="tab-num">4</span>Use Cases</button>
     <button class="tab-btn" onclick="showTab(4)"><span class="tab-num">5</span>Live Demo</button>
     <button class="tab-btn" onclick="showTab(5)"><span class="tab-num">6</span>Python Code</button>
+    <button class="tab-btn" onclick="showTab(6)"><span class="tab-num">7</span>Skills</button>
   </div>
 </div>
 
@@ -1261,7 +1262,291 @@ answer = <span class="fn">run_agent</span>(<span class="str">"Analyze TechCorp p
   </div>
 </div>
 
-</div><!-- end .main -->
+<!-- ======================== SECTION 7: AGENT SKILLS ======================== -->
+<div class="section" id="tab-6">
+  <p class="section-title">Agent Skills</p>
+  <p class="section-lead">An AI agent is not just a chatbot — it possesses a distinct set of cognitive and operational skills that allow it to act autonomously. Understanding these skills tells you <em>what an agent can do</em>, <em>how it does it</em>, and <em>where it falls short</em>.</p>
+
+  <!-- SKILL CARDS -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;margin-bottom:2rem">
+
+    <div class="card" style="border-top:3px solid var(--accent)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.6rem">
+        <div style="width:30px;height:30px;border-radius:7px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:15px">🗣️</div>
+        <div style="font-weight:600;font-size:0.95rem;color:var(--accent)">Natural Language Understanding</div>
+      </div>
+      <div style="font-size:13px;color:var(--ink-muted);line-height:1.65;margin-bottom:0.7rem">The agent reads and interprets plain English — including ambiguous, incomplete, or business-specific questions — and converts them into structured actions. It understands <em>intent</em>, not just keywords.</div>
+      <div style="font-size:12px;padding:0.4rem 0.7rem;background:var(--accent-light);border-radius:6px;color:var(--accent)"><strong>Example:</strong> "Why did margins dip last quarter?" → agent identifies the metric, time range, and comparison needed without being explicitly told.</div>
+      <div style="margin-top:0.6rem;font-size:12px;padding:0.4rem 0.7rem;background:#fdecea;border-radius:6px;color:#801010"><strong>Limit:</strong> Struggles with highly specialised jargon or ambiguous pronouns — clear prompts always improve output.</div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--teal)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.6rem">
+        <div style="width:30px;height:30px;border-radius:7px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;font-size:15px">🧩</div>
+        <div style="font-weight:600;font-size:0.95rem;color:var(--teal)">Goal Decomposition & Planning</div>
+      </div>
+      <div style="font-size:13px;color:var(--ink-muted);line-height:1.65;margin-bottom:0.7rem">Given a high-level goal, the agent breaks it into a sequence of achievable sub-tasks — deciding what to do first, what information it needs, and what order to do things in. This is autonomous planning, not scripted logic.</div>
+      <div style="font-size:12px;padding:0.4rem 0.7rem;background:var(--teal-light);border-radius:6px;color:var(--teal)"><strong>Example:</strong> "Compare three companies" → agent plans: fetch each company → benchmark each → compare → synthesise. You never told it those were the steps.</div>
+      <div style="margin-top:0.6rem;font-size:12px;padding:0.4rem 0.7rem;background:#fdecea;border-radius:6px;color:#801010"><strong>Limit:</strong> Plans can be inefficient or skip edge cases — works best on well-scoped goals with clear success criteria.</div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--purple)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.6rem">
+        <div style="width:30px;height:30px;border-radius:7px;background:var(--purple-light);display:flex;align-items:center;justify-content:center;font-size:15px">🔧</div>
+        <div style="font-weight:600;font-size:0.95rem;color:var(--purple)">Tool Selection & Use</div>
+      </div>
+      <div style="font-size:13px;color:var(--ink-muted);line-height:1.65;margin-bottom:0.7rem">The agent knows what tools are available to it (search, code runner, database, APIs) and decides autonomously which one to call, with what parameters, and when. It does not use tools randomly — it chooses based on what the task requires.</div>
+      <div style="font-size:12px;padding:0.4rem 0.7rem;background:var(--purple-light);border-radius:6px;color:var(--purple)"><strong>Example:</strong> For an ROI question it calls the calculator tool; for a company name it calls the data lookup — not the other way around.</div>
+      <div style="margin-top:0.6rem;font-size:12px;padding:0.4rem 0.7rem;background:#fdecea;border-radius:6px;color:#801010"><strong>Limit:</strong> Can only use tools it has been given — it cannot invent new tools or access systems it has not been connected to.</div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--amber)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.6rem">
+        <div style="width:30px;height:30px;border-radius:7px;background:var(--amber-light);display:flex;align-items:center;justify-content:center;font-size:15px">🔄</div>
+        <div style="font-weight:600;font-size:0.95rem;color:var(--amber)">Iterative Reasoning (the Agent Loop)</div>
+      </div>
+      <div style="font-size:13px;color:var(--ink-muted);line-height:1.65;margin-bottom:0.7rem">After each action, the agent reads the result and decides: am I done, or do I need another step? This loop — observe, think, act — continues until the task is complete. It is what separates an agent from a single API call.</div>
+      <div style="font-size:12px;padding:0.4rem 0.7rem;background:var(--amber-light);border-radius:6px;color:var(--amber)"><strong>Example:</strong> Tool returns "company not found" → agent does not crash; it re-reasons and either tries an alternative or explains the gap in its final answer.</div>
+      <div style="margin-top:0.6rem;font-size:12px;padding:0.4rem 0.7rem;background:#fdecea;border-radius:6px;color:#801010"><strong>Limit:</strong> Each loop costs tokens and time — poorly scoped tasks can create expensive, runaway loops.</div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--green)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.6rem">
+        <div style="width:30px;height:30px;border-radius:7px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:15px">🗄️</div>
+        <div style="font-weight:600;font-size:0.95rem;color:var(--green)">Memory & Context Retention</div>
+      </div>
+      <div style="font-size:13px;color:var(--ink-muted);line-height:1.65;margin-bottom:0.7rem">Within a session, the agent remembers everything said — previous questions, tool results, and its own reasoning. This lets it build on earlier findings rather than starting from scratch each time. Long-term memory can be added via external databases.</div>
+      <div style="font-size:12px;padding:0.4rem 0.7rem;background:var(--green-light);border-radius:6px;color:var(--green)"><strong>Example:</strong> After fetching TechCorp data, a follow-up like "how does that compare to HealthPlus?" works — the agent remembers TechCorp's numbers without you repeating them.</div>
+      <div style="margin-top:0.6rem;font-size:12px;padding:0.4rem 0.7rem;background:#fdecea;border-radius:6px;color:#801010"><strong>Limit:</strong> Context window is finite (~200K tokens). Very long sessions or large documents can exceed it, causing the agent to forget earlier parts.</div>
+    </div>
+
+    <div class="card" style="border-top:3px solid var(--coral)">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:0.6rem">
+        <div style="width:30px;height:30px;border-radius:7px;background:var(--coral-light);display:flex;align-items:center;justify-content:center;font-size:15px">📝</div>
+        <div style="font-weight:600;font-size:0.95rem;color:var(--coral)">Synthesis & Communication</div>
+      </div>
+      <div style="font-size:13px;color:var(--ink-muted);line-height:1.65;margin-bottom:0.7rem">After gathering data from multiple tools, the agent does not just dump raw numbers — it interprets them, identifies patterns, and produces a coherent, readable narrative. It writes like an analyst, not a spreadsheet.</div>
+      <div style="font-size:12px;padding:0.4rem 0.7rem;background:var(--coral-light);border-radius:6px;color:var(--coral)"><strong>Example:</strong> Three company lookups → one memo that ranks them, explains the gaps, and highlights the key insight — not three separate JSON blobs.</div>
+      <div style="margin-top:0.6rem;font-size:12px;padding:0.4rem 0.7rem;background:#fdecea;border-radius:6px;color:#801010"><strong>Limit:</strong> Can hallucinate when data is sparse. Always verify critical numbers against the original tool results shown in the reasoning trace.</div>
+    </div>
+
+  </div>
+
+  <!-- QUICK SUMMARY TABLE -->
+  <div class="card" style="padding:0">
+    <div style="padding:0.9rem 1.2rem;border-bottom:1px solid var(--border);font-weight:600;font-size:0.95rem">At a glance — the six agent skills</div>
+    <table class="compare-table" style="margin:0">
+      <thead>
+        <tr>
+          <th>Skill</th>
+          <th>What it does</th>
+          <th>How it works</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--accent)">Language understanding</strong></td>
+          <td>Reads and interprets your question</td>
+          <td>LLM tokenises and encodes intent from natural text</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--teal)">Goal decomposition</strong></td>
+          <td>Breaks a big task into ordered steps</td>
+          <td>LLM uses chain-of-thought reasoning to plan</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--purple)">Tool selection</strong></td>
+          <td>Picks the right tool for each sub-task</td>
+          <td>LLM matches task type to available tool schemas</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--amber)">Iterative reasoning</strong></td>
+          <td>Keeps acting until the task is done</td>
+          <td>The agent loop — observe → think → act → repeat</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--green)">Memory retention</strong></td>
+          <td>Remembers earlier results in the session</td>
+          <td>Full conversation history passed as context each call</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--coral)">Synthesis</strong></td>
+          <td>Turns raw data into a readable insight</td>
+          <td>LLM generates language from the accumulated tool results</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout tip" style="margin-top:1.5rem">
+    <div class="callout-icon">💡</div>
+    <div>These six skills always work <strong>together</strong>. When you send one message to the demo agent, all six fire in sequence: it <em>understands</em> your question → <em>decomposes</em> the goal → <em>selects</em> tools → <em>loops</em> until done → draws on <em>memory</em> → <em>synthesises</em> the answer. The reasoning trace in the demo shows you exactly where each skill activates.</div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- TECHNOLOGIES PER SKILL -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.2rem">
+    <div style="width:32px;height:32px;border-radius:8px;background:var(--accent-light);display:flex;align-items:center;justify-content:center;font-size:16px">⚙️</div>
+    <div>
+      <div style="font-weight:600;font-size:1.05rem">Technologies that implement each skill</div>
+      <div style="font-size:13px;color:var(--ink-muted)">When you build your own agent, these are the specific libraries and services that deliver each capability</div>
+    </div>
+  </div>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Skill</th>
+        <th>Primary technology</th>
+        <th>Install / access</th>
+        <th>Alternatives</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong style="color:var(--accent)">🗣️ Language understanding</strong></td>
+        <td>Claude API (Anthropic), GPT-4o (OpenAI)</td>
+        <td><code style="background:#e8f0fb;padding:1px 6px;border-radius:4px;font-size:12px">pip install anthropic</code></td>
+        <td>Gemini (Google), Llama 3 (Meta/local)</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--teal)">🧩 Goal decomposition</strong></td>
+        <td>LangChain Agents, LangGraph</td>
+        <td><code style="background:#e0f5f2;padding:1px 6px;border-radius:4px;font-size:12px">pip install langchain langgraph</code></td>
+        <td>CrewAI, AutoGen, raw Claude tool_use</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--purple)">🔧 Tool selection & use</strong></td>
+        <td>Anthropic tool_use API, LangChain tools</td>
+        <td><code style="background:#ede7f6;padding:1px 6px;border-radius:4px;font-size:12px">tools=[…] in API call</code></td>
+        <td>OpenAI function calling, Gemini tools</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--amber)">🔄 Iterative reasoning</strong></td>
+        <td>Custom while-loop (Python), LangGraph state machine</td>
+        <td><code style="background:#fff3e0;padding:1px 6px;border-radius:4px;font-size:12px">while stop_reason != "end_turn"</code></td>
+        <td>LangChain AgentExecutor, CrewAI task runner</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--green)">🗄️ Memory retention</strong></td>
+        <td>In-session: messages list. Long-term: ChromaDB, Pinecone</td>
+        <td><code style="background:#e8f5e9;padding:1px 6px;border-radius:4px;font-size:12px">pip install chromadb</code></td>
+        <td>FAISS (local), Weaviate, Redis Vector</td>
+      </tr>
+      <tr>
+        <td><strong style="color:var(--coral)">📝 Synthesis</strong></td>
+        <td>Claude / GPT-4o final response generation</td>
+        <td>Built into the LLM — no extra library needed</td>
+        <td>Add structured output with <code style="font-size:12px">response_format</code></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:1rem;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0.7rem">
+    <div style="padding:0.8rem 1rem;border-radius:10px;background:var(--accent-light);border:1px solid #b0c8f0;font-size:13px">
+      <div style="font-weight:600;color:var(--accent);margin-bottom:0.3rem">🟢 Beginner recommendation</div>
+      <div style="color:#3050a0;line-height:1.5">Start with the <strong>Anthropic Python SDK</strong> only. It gives you language understanding, tool use, and the agent loop in under 40 lines. Add LangChain once you're comfortable with the basics.</div>
+    </div>
+    <div style="padding:0.8rem 1rem;border-radius:10px;background:var(--teal-light);border:1px solid #90d0c8;font-size:13px">
+      <div style="font-weight:600;color:var(--teal);margin-bottom:0.3rem">📦 Minimum viable stack</div>
+      <div style="color:#1a5a50;line-height:1.5"><code style="background:#c8f0e8;padding:1px 5px;border-radius:3px;font-size:11px">anthropic</code> + <code style="background:#c8f0e8;padding:1px 5px;border-radius:3px;font-size:11px">chromadb</code> + your own tool functions. This covers all six skills and is what the demo in this handout is built on.</div>
+    </div>
+    <div style="padding:0.8rem 1rem;border-radius:10px;background:var(--purple-light);border:1px solid #c5aff0;font-size:13px">
+      <div style="font-weight:600;color:var(--purple);margin-bottom:0.3rem">🚀 Advanced stack</div>
+      <div style="color:#5040a0;line-height:1.5"><code style="background:#e0d8f8;padding:1px 5px;border-radius:3px;font-size:11px">langchain</code> + <code style="background:#e0d8f8;padding:1px 5px;border-radius:3px;font-size:11px">langgraph</code> + <code style="background:#e0d8f8;padding:1px 5px;border-radius:3px;font-size:11px">pinecone</code>. Use for multi-agent systems, long-term memory, and production deployments.</div>
+    </div>
+  </div>
+
+  <hr class="section-divider">
+
+  <!-- SKILLS IN THE LIVE DEMO -->
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:1.2rem">
+    <div style="width:32px;height:32px;border-radius:8px;background:var(--green-light);display:flex;align-items:center;justify-content:center;font-size:16px">🔬</div>
+    <div>
+      <div style="font-weight:600;font-size:1.05rem">Skills in action — the live demo traced</div>
+      <div style="font-size:13px;color:var(--ink-muted)">When you type <em>"Analyze TechCorp profitability vs industry average"</em> in the demo, here is exactly which skill fires at each moment</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:0;border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:1.5rem">
+
+    <div style="display:grid;grid-template-columns:28px 1fr 1fr;background:var(--ink);color:#fff;font-size:12px;font-weight:500;padding:0.6rem 1rem;gap:1rem">
+      <div>#</div><div>What you see in the demo</div><div>Skill activated</div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:28px 1fr 1fr;padding:0.75rem 1rem;gap:1rem;border-bottom:1px solid var(--border);align-items:start">
+      <div style="width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center">1</div>
+      <div style="font-size:13px">You type a plain English question. No structured form, no dropdowns — just natural language.</div>
+      <div style="font-size:13px"><span style="color:var(--accent);font-weight:600">🗣️ Language understanding</span><br><span style="color:var(--ink-muted);font-size:12px">Claude reads the message, identifies the intent (profitability analysis + comparison), and maps it to the available tools.</span></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:28px 1fr 1fr;padding:0.75rem 1rem;gap:1rem;border-bottom:1px solid var(--border);background:#fafafe;align-items:start">
+      <div style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center">2</div>
+      <div style="font-size:13px">The agent does not ask you for clarification. It silently decides it needs two lookups: company data + industry benchmark.</div>
+      <div style="font-size:13px"><span style="color:var(--teal);font-weight:600">🧩 Goal decomposition</span><br><span style="color:var(--ink-muted);font-size:12px">Claude breaks "analyze and compare" into sub-goals: (a) fetch TechCorp data, (b) fetch industry average, (c) compare and synthesise.</span></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:28px 1fr 1fr;padding:0.75rem 1rem;gap:1rem;border-bottom:1px solid var(--border);align-items:start">
+      <div style="width:22px;height:22px;border-radius:50%;background:var(--purple);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center">3</div>
+      <div style="font-size:13px">You see <code style="background:#e8f0fb;padding:1px 5px;border-radius:3px;font-size:11px">⚙️ Tool call → get_company_data</code> appear with <code style="font-size:11px;background:#e8f0fb;padding:1px 4px;border-radius:3px">{"company_name": "TechCorp"}</code></div>
+      <div style="font-size:13px"><span style="color:var(--purple);font-weight:600">🔧 Tool selection</span><br><span style="color:var(--ink-muted);font-size:12px">Claude chose <em>get_company_data</em> — not calculate_roi or get_industry_benchmark — because the question first requires raw company metrics.</span></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:28px 1fr 1fr;padding:0.75rem 1rem;gap:1rem;border-bottom:1px solid var(--border);background:#fafafe;align-items:start">
+      <div style="width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center">4</div>
+      <div style="font-size:13px">After the first tool result appears, the agent immediately calls a second tool: <code style="background:#fff3e0;padding:1px 5px;border-radius:3px;font-size:11px">get_industry_benchmark</code>. It did not stop after the first result.</div>
+      <div style="font-size:13px"><span style="color:var(--amber);font-weight:600">🔄 Iterative reasoning</span><br><span style="color:var(--ink-muted);font-size:12px">The agent looped: it read the tool result, decided the task was not yet complete, and triggered the next action automatically.</span></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:28px 1fr 1fr;padding:0.75rem 1rem;gap:1rem;border-bottom:1px solid var(--border);align-items:start">
+      <div style="width:22px;height:22px;border-radius:50%;background:var(--green);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center">5</div>
+      <div style="font-size:13px">If you then ask <em>"how does that compare to RetailCo?"</em>, the agent already knows TechCorp's numbers — you do not repeat them.</div>
+      <div style="font-size:13px"><span style="color:var(--green);font-weight:600">🗄️ Memory retention</span><br><span style="color:var(--ink-muted);font-size:12px">The entire conversation history — including all tool results — is passed as context on every call, so the agent remembers what it already found.</span></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:28px 1fr 1fr;padding:0.75rem 1rem;gap:1rem;align-items:start">
+      <div style="width:22px;height:22px;border-radius:50%;background:var(--coral);color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center">6</div>
+      <div style="font-size:13px">The final answer is not a raw JSON dump. It reads like an analyst memo — it names the gap, interprets whether the margin is good or bad, and makes a recommendation.</div>
+      <div style="font-size:13px"><span style="color:var(--coral);font-weight:600">📝 Synthesis</span><br><span style="color:var(--ink-muted);font-size:12px">Claude combines both tool results into coherent language, adding interpretation and business context that was not in the raw data.</span></div>
+    </div>
+
+  </div>
+
+  <!-- Demo code snippet showing the loop -->
+  <div style="font-weight:600;font-size:0.9rem;margin-bottom:0.6rem;color:var(--ink-muted)">The Python code behind what you just saw</div>
+  <div class="code-block">
+    <div class="code-label">PYTHON — skills mapped to code</div>
+    <pre><span class="cm"># SKILL 1 — Language understanding: Claude reads your plain English message</span>
+messages = [{<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: <span class="str">"Analyze TechCorp profitability vs industry average"</span>}]
+
+<span class="kw">while</span> <span class="cls">True</span>:
+    response = client.messages.<span class="fn">create</span>(
+        model=<span class="str">"claude-sonnet-4-20250514"</span>,
+        tools=tools,          <span class="cm"># SKILL 3 — Tool selection: Claude sees what tools exist</span>
+        messages=messages     <span class="cm"># SKILL 5 — Memory: full history passed every call</span>
+    )
+
+    <span class="kw">if</span> response.stop_reason == <span class="str">"end_turn"</span>:
+        <span class="fn">print</span>(response.content[<span class="num">0</span>].text)  <span class="cm"># SKILL 6 — Synthesis: readable final answer</span>
+        <span class="kw">break</span>
+
+    <span class="cm"># SKILL 2 — Goal decomposition: Claude decided it needs tool calls, not a direct answer</span>
+    <span class="cm"># SKILL 4 — Iterative reasoning: we loop back until stop_reason is "end_turn"</span>
+    tool_results = []
+    <span class="kw">for</span> block <span class="kw">in</span> response.content:
+        <span class="kw">if</span> block.type == <span class="str">"tool_use"</span>:          <span class="cm"># Claude chose which tool to call</span>
+            result = <span class="fn">execute_tool</span>(block.name, block.input)
+            tool_results.<span class="fn">append</span>({<span class="str">"type"</span>: <span class="str">"tool_result"</span>, <span class="str">"tool_use_id"</span>: block.id, <span class="str">"content"</span>: result})
+
+    messages.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"assistant"</span>, <span class="str">"content"</span>: response.content})
+    messages.<span class="fn">append</span>({<span class="str">"role"</span>: <span class="str">"user"</span>, <span class="str">"content"</span>: tool_results})  <span class="cm"># loop continues</span></pre>
+  </div>
+
+</div>
+
+
+
 
 <script>
 // ======= TAB NAVIGATION =======
